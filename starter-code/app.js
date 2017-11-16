@@ -11,6 +11,8 @@ const session      = require('express-session');
 mongoose.connect("mongodb://localhost/linkedin-clone");
 const authController = require('./routes/authController');
 const profileController = require('./routes/profileController');
+const userController = require('./routes/userController');
+const postsController = require('./routes/postsController');
 
 app.use(logger('dev'));
 
@@ -34,6 +36,8 @@ app.use(cookieParser());
 
 app.use('/', authController);
 app.use('/profile', profileController);
+app.use('/users', userController);
+app.use('/', postsController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
