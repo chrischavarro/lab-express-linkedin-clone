@@ -33,7 +33,7 @@ app.use(session({
 app.use(cookieParser());
 
 app.use('/', authController);
-app.use('/', profileController);
+app.use('/profile', profileController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -2,17 +2,30 @@ const express = require('express');
 const profileController = express.Router();
 const User = require('../models/user');
 
-profileController.get('/profile/:userId/edit', (req, res, next) => {
+profileController.get('/:userId', (req, res, next) => {
+  let userId = req.params.userId
+  User
+    .findOne({ "_id": userId })
+    .exec((err, user) => {
+        res.render("profiles/show", {
+          user,
+          session: req.session.currentUser
+        });
+    });
+  });
+
+profileController.get('/:userId/edit', (req, res, next) => {
   const userId = req.params.userId;
 
   User
-    .find({ _id: userId })
+    .findOne({ "_id": userId })
     .exec((err, user) => {
-      if (err || !user || req.sessions.currentUser !== user) {
-        res.redirect('auth/login', {
-          errorMessage: 'You don\'t have permission to edit this profile.'
-        });
-      } else {
+      if ( err || !user || !req.session.currentUser ) {
+        res.redirect('/login');
+        return;
+      }
+
+      else if (req.session.currentUser._id == user._id) {
         res.render('profiles/edit', {
           name: user.name,
           email: user.email,
@@ -21,12 +34,15 @@ profileController.get('/profile/:userId/edit', (req, res, next) => {
           company: user.company,
           jobTitle: user.jobTitle,
           id: user._id
-        });
-      };
+        })
+      } else {
+        res.redirect(`/profile/${req.session.currentUser._id}`);
+        console.log('redirected', req.session.currentUser._id, user._id)
+      }
     });
 });
 
-profileController.post('/profile/:userId', (req, res, next) => {
+profileController.post('/:userId', (req, res, next) => {
   const userId = req.params.userId
 
   const userUpdate = {
@@ -35,53 +51,22 @@ profileController.post('/profile/:userId', (req, res, next) => {
     summary: req.body.summary,
     imageUrl: req.body.imageUrl,
     company: req.body.company,
-    jobTitle: user.jobTitle
+    jobTitle: req.body.jobTitle
   }
 
   User
     .findOneAndUpdate({ "_id": userId }, userUpdate)
     .exec((err) => {
       if (err) {
-        res.redirect('profile/:userId/edit', {
+        res.render(`profile/${userId}/edit`, {
           errorMessage: 'There was a problem updating your profile'
         })
       } else {
-        res.render('/home');
+        res.redirect(`/profile/${userId}`);
       }
     })
 });
 
-profileController.get('/profile/:userId', (req, res, next) => {
-  let userId = req.params.userId
 
-  if (req.session.currentUser._id === userId) {
-    res.render('profiles/edit', {
-      additionalComponents: 'Edit Button'
-    });
-    return;
-  }
-
-  User
-    .findOne({ "_id": userId })
-    .exec((err, user) => {
-      if (!req.session.currentUser) {
-        res.render('profiles/show', {
-          name: user.name,
-          jobTitle: user.jobTitle,
-          imageUrl: user.imageUrl,
-          company: user.company
-        })
-      } else {
-        res.render('profiles/show', {
-          name: user.name,
-          email: user.email,
-          summary: user.summary,
-          imageUrl: user.imageUrl,
-          company: user.company,
-          jobTitle: user.jobTitle
-        });
-      };
-    });
-});
 
 module.exports = profileController;

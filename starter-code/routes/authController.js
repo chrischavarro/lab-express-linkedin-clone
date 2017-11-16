@@ -4,10 +4,10 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const bcryptSalt = 10;
 
-authController.use((req, res, next) => {
-  if (!req.session.currentUser) { next(); }
-  else { res.redirect('/home'); }
-})
+// authController.use((req, res, next) => {
+//   if (req.session.currentUser === 'undefined') { next(); }
+//   else { res.redirect('/'); }
+// })
 
 authController.get('/login', (req, res, next) => {
   res.render('auth/login');
@@ -32,10 +32,13 @@ authController.post('/login', (req, res, next) => {
         });
         return;
       } else {
-        if (bcrypt.compareSync(user.password, password)) {
+        if (bcrypt.compareSync(password, user.password)) {
           req.session.currentUser = user;
-          res.render('/home');
+          res.render('protected/home', {
+            name: user.name
+          });
         } else {
+          // console.log(password, user.password)
           res.render('auth/login', {
             errorMessage: 'Incorrect password'
           });
@@ -68,7 +71,7 @@ authController.post('/signup', (req, res, next) => {
             errorMessage: 'Username already exists'
           })
         } else {
-          const salt = bcrypt.getSaltSync(bcryptSalt);
+          const salt = bcrypt.genSaltSync(bcryptSalt);
           const hashPass = bcrypt.hashSync(password, salt);
 
           const newUser = User({
@@ -80,11 +83,13 @@ authController.post('/signup', (req, res, next) => {
 
           newUser.save((err) => {
             if (err) {
-              res.redirect('auth/signup', {
+              res.render('auth/signup', {
                 errorMessage: 'Something went wrong when signing up'
               });
             } else {
-              res.render('/home');
+              res.render('protected/home', {
+                name: user.name
+              });
             };
           });
         };
@@ -97,13 +102,13 @@ authController.get('/logout', (req, res, next) => {
   });
 });
 
-authController.use((req, res, next) => {
-  if (req.session.currentUser) { next(); }
-  else { res.redirect('/login'); }
-})
+// authController.use((req, res, next) => {
+//   if (req.session.currentUser) { next(); }
+//   else { res.redirect('/login'); }
+// })
 
 authController.get('/', (req, res, next) => {
-  res.render('/home');
-})
+  res.render('protected/home');
+});
 
 module.exports = authController;

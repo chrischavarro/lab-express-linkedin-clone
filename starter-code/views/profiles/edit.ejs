@@ -1,14 +1,21 @@
 <form action="/profile/<%= id %>" method="POST">
-  <label for="user-name"></label>
+  <label for="user-name"><b>Name</b></label>
   <input type="text" name="name" id="user-name" value="<%= name %>">
-  <label for="user-email"></label>
+  <br>
+  <label for="user-email"><b>Email</b></label>
   <input type="text" name="email" id="user-email" value="<%= email %>">
-  <label for="user-summary"></label>
+  <br>
+  <label for="user-summary"><b>Summary</b></label>
   <input type="text" name="summary" id="user-summary" value="<%= summary %>">
-  <label for="user-imageUrl"></label>
+  <br>
+  <label for="user-imageUrl"><b>Image</b></label>
   <input type="text" name="imageUrl" id="user-imageUrl" value="<%= imageUrl %>">
-  <label for="user-company"></label>
+  <br>
+  <label for="user-company"><b>Company</b></label>
   <input type="text" name="company" id="user-company" value="<%= company %>">
-  <label for="user-jobTitle"></label>
+  <br>
+  <label for="user-jobTitle"><b>Job Title</b></label>
   <input type="text" name="jobTitle" id="user-jobTitle" value="<%= jobTitle %>">
+  <br>
+  <button type="submit">Save Changes</button>
 </form>

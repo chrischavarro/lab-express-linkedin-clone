@@ -1,0 +1,21 @@
+<h2>Showing Profile</h2>
+
+
+<img src="<%= user.imageUrl %>" width="100px"> <br>
+
+<b>Name: </b><%= user.name %> <br>
+
+<b>Job Title: </b><%= user.jobTitle %> <br>
+
+<b>Company: </b><%= user.company %> <br>
+
+<% if (session !== undefined && user.username !== session.username) {%>
+  <b>Email: </b><%= user.email %> <br>
+  <b>Summary: </b><%= user.summary %>
+  <% } %>
+
+<% if (session !== undefined && user.username === session.username) { %>
+  <b>Email: </b><%= user.email %> <br>
+  <b>Summary: </b><%= user.summary %> <br>
+  <a href="/profile/<%= user._id %>/edit"><button type="button">Edit Profile</button></a>
+<% } %>
